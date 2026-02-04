@@ -6,8 +6,7 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             
-            <!-- CORRECCIÓN: Cambiar 'tree' por 'list' o usar //field directo -->
-            <!-- Opción A (Recomendada para Odoo 19): Usar 'list' -->
+            <!-- 1. Columnas en las lineas de la orden (Usa 'list' en Odoo 19) -->
             <xpath expr="//field[@name='order_line']/list//field[@name='qty_delivered']" position="after">
                 <field name="fulfillment_percent" widget="percentage" optional="show" decoration-success="fulfillment_percent == 100" decoration-warning="fulfillment_percent &lt; 100 and fulfillment_percent &gt; 0"/>
                 <field name="returned_qty_m2" optional="show" decoration-danger="returned_qty_m2 &gt; 0"/>
@@ -16,18 +15,18 @@
 
             <!-- 2. Desglose de pagos debajo del total -->
             <xpath expr="//group[@name='sale_total']" position="after">
-                <!-- Se recomienda usar 'invisible' como atributo booleano directo en Odoo 19+ -->
                 <div class="alert alert-info" role="alert" style="margin-top: 20px; margin-bottom: 0px;" invisible="not payment_ids">
                     <strong>Desglose de Pagos Aplicados</strong>
                 </div>
-                <field name="payment_ids" mode="tree" readonly="1" invisible="not payment_ids">
-                    <tree create="0" delete="0" edit="0">
+                <!-- CORRECCIÓN: mode="list" y etiqueta <list> interna -->
+                <field name="payment_ids" mode="list" readonly="1" invisible="not payment_ids">
+                    <list create="0" delete="0" edit="0">
                         <field name="date"/>
                         <field name="name" string="Referencia"/>
                         <field name="journal_id"/>
                         <field name="amount" string="Monto Pagado"/>
                         <field name="currency_id" column_invisible="1"/>
-                    </tree>
+                    </list>
                 </field>
                 
                 <group name="sale_balance" class="mt-2" invisible="not payment_ids">
