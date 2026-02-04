@@ -6,33 +6,39 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             
-            <!-- 1. Columnas en las lineas de la orden (Usa 'list' en Odoo 19) -->
+            <!-- 1. Columnas en las líneas de la orden (Con etiqueta 'list' para Odoo 19) -->
             <xpath expr="//field[@name='order_line']/list//field[@name='qty_delivered']" position="after">
                 <field name="fulfillment_percent" widget="percentage" optional="show" decoration-success="fulfillment_percent == 100" decoration-warning="fulfillment_percent &lt; 100 and fulfillment_percent &gt; 0"/>
                 <field name="returned_qty_m2" optional="show" decoration-danger="returned_qty_m2 &gt; 0"/>
                 <field name="returned_amount" optional="hide"/>
             </xpath>
 
-            <!-- 2. Desglose de pagos debajo del total -->
-            <xpath expr="//group[@name='sale_total']" position="after">
-                <div class="alert alert-info" role="alert" style="margin-top: 20px; margin-bottom: 0px;" invisible="not payment_ids">
-                    <strong>Desglose de Pagos Aplicados</strong>
-                </div>
-                <!-- CORRECCIÓN: mode="list" y etiqueta <list> interna -->
-                <field name="payment_ids" mode="list" readonly="1" invisible="not payment_ids">
-                    <list create="0" delete="0" edit="0">
-                        <field name="date"/>
-                        <field name="name" string="Referencia"/>
-                        <field name="journal_id"/>
-                        <field name="amount" string="Monto Pagado"/>
-                        <field name="currency_id" column_invisible="1"/>
-                    </list>
-                </field>
+            <!-- 2. Pendiente por Pagar: Insertado DENTRO del footer para alineación perfecta -->
+            <!-- Usamos 'amount_total' como ancla para ponerlo justo debajo -->
+            <xpath expr="//field[@name='amount_total']" position="after">
+                <field name="amount_pending_to_pay" 
+                       class="oe_subtotal_footer_separator" 
+                       decoration-bf="1" 
+                       decoration-danger="amount_pending_to_pay &gt; 0"/>
+            </xpath>
+
+            <!-- 3. Desglose de Pagos: SEPARADO en un bloque limpio al final -->
+            <!-- Buscamos el grupo padre 'note_group' que contiene las notas y los totales -->
+            <!-- Al ponerlo 'after', aseguramos que ocupe todo el ancho y no se superponga -->
+            <xpath expr="//group[@name='note_group']" position="after">
                 
-                <group name="sale_balance" class="mt-2" invisible="not payment_ids">
-                    <group class="oe_subtotal_footer">
-                        <field name="amount_pending_to_pay" class="oe_subtotal_footer_separator" decoration-bf="1" decoration-danger="amount_pending_to_pay &gt; 0"/>
-                    </group>
+                <div class="clearfix"/> <!-- Limpiar flotantes por seguridad -->
+                
+                <group name="payment_breakdown_section" string="Desglose de Pagos Aplicados" invisible="not payment_ids">
+                    <field name="payment_ids" mode="list" readonly="1" nolabel="1">
+                        <list create="0" delete="0" edit="0">
+                            <field name="date"/>
+                            <field name="name" string="Referencia"/>
+                            <field name="journal_id"/>
+                            <field name="amount" string="Monto Pagado"/>
+                            <field name="currency_id" column_invisible="1"/>
+                        </list>
+                    </field>
                 </group>
             </xpath>
 
