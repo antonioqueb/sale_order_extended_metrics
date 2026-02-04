@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_order_form_extended_metrics" model="ir.ui.view">
+        <field name="name">sale.order.form.extended.metrics</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            
+            <!-- 1. Columnas en las lineas de la orden -->
+            <xpath expr="//field[@name='order_line']/tree//field[@name='qty_delivered']" position="after">
+                <field name="fulfillment_percent" widget="percentage" optional="show" decoration-success="fulfillment_percent == 100" decoration-warning="fulfillment_percent &lt; 100 and fulfillment_percent &gt; 0"/>
+                <field name="returned_qty_m2" optional="show" decoration-danger="returned_qty_m2 &gt; 0"/>
+                <field name="returned_amount" optional="hide"/>
+            </xpath>
+
+            <!-- 2. Desglose de pagos debajo del total -->
+            <!-- Buscamos el grupo de totales (sale_total) y agregamos el bloque despues -->
+            <xpath expr="//group[@name='sale_total']" position="after">
+                <div class="alert alert-info" role="alert" style="margin-top: 20px; margin-bottom: 0px;" invisible="not payment_ids">
+                    <strong>Desglose de Pagos Aplicados</strong>
+                </div>
+                <field name="payment_ids" mode="tree" readonly="1" invisible="not payment_ids">
+                    <tree create="0" delete="0" edit="0">
+                        <field name="date"/>
+                        <field name="name" string="Referencia"/>
+                        <field name="journal_id"/>
+                        <field name="amount" string="Monto Pagado"/>
+                        <field name="currency_id" column_invisible="1"/>
+                    </tree>
+                </field>
+                
+                <group name="sale_balance" class="mt-2" invisible="not payment_ids">
+                    <group class="oe_subtotal_footer">
+                        <field name="amount_pending_to_pay" class="oe_subtotal_footer_separator" decoration-bf="1" decoration-danger="amount_pending_to_pay &gt; 0"/>
+                    </group>
+                </group>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>
