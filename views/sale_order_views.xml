@@ -6,15 +6,14 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             
-            <!-- 1. Columnas en las líneas -->
+            <!-- 1. Métricas en líneas -->
             <xpath expr="//field[@name='order_line']/list//field[@name='qty_delivered']" position="after">
-                <!-- Se visualizará como porcentaje correctamente (ej. 100%) -->
                 <field name="fulfillment_percent" widget="percentage" optional="show" decoration-success="fulfillment_percent == 1" decoration-warning="fulfillment_percent &lt; 1 and fulfillment_percent &gt; 0"/>
                 <field name="returned_qty_m2" optional="show" decoration-danger="returned_qty_m2 &gt; 0"/>
                 <field name="returned_amount" optional="hide"/>
             </xpath>
 
-            <!-- 2. Pendiente por Pagar -->
+            <!-- 2. Pendiente por Pagar (Debajo del total) -->
             <xpath expr="//field[@name='tax_totals']" position="after">
                 <field name="amount_pending_to_pay" 
                        class="oe_subtotal_footer_separator" 
@@ -22,8 +21,7 @@
                        decoration-danger="amount_pending_to_pay &gt; 0"/>
             </xpath>
 
-            <!-- 3. Desglose de Pagos (ANCHO COMPLETO) -->
-            <!-- Usamos 'separator' y ponemos el field directamente sin <group> contenedor -->
+            <!-- 3. Desglose de Pagos (Ancho completo con Sumatoria) -->
             <xpath expr="//group[@name='note_group']" position="after">
                 <div class="clearfix"/>
                 
@@ -34,7 +32,8 @@
                         <field name="date"/>
                         <field name="name" string="Referencia"/>
                         <field name="journal_id"/>
-                        <field name="amount" string="Monto Pagado"/>
+                        <!-- AGREGADO: sum="Total Pagado" -->
+                        <field name="amount" string="Monto Pagado" sum="Total Pagado"/>
                         <field name="currency_id" column_invisible="1"/>
                     </list>
                 </field>
