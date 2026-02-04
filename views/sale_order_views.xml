@@ -6,16 +6,17 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             
-            <!-- 1. Columnas en las lineas de la orden -->
-            <xpath expr="//field[@name='order_line']/tree//field[@name='qty_delivered']" position="after">
+            <!-- CORRECCIÓN: Cambiar 'tree' por 'list' o usar //field directo -->
+            <!-- Opción A (Recomendada para Odoo 19): Usar 'list' -->
+            <xpath expr="//field[@name='order_line']/list//field[@name='qty_delivered']" position="after">
                 <field name="fulfillment_percent" widget="percentage" optional="show" decoration-success="fulfillment_percent == 100" decoration-warning="fulfillment_percent &lt; 100 and fulfillment_percent &gt; 0"/>
                 <field name="returned_qty_m2" optional="show" decoration-danger="returned_qty_m2 &gt; 0"/>
                 <field name="returned_amount" optional="hide"/>
             </xpath>
 
             <!-- 2. Desglose de pagos debajo del total -->
-            <!-- Buscamos el grupo de totales (sale_total) y agregamos el bloque despues -->
             <xpath expr="//group[@name='sale_total']" position="after">
+                <!-- Se recomienda usar 'invisible' como atributo booleano directo en Odoo 19+ -->
                 <div class="alert alert-info" role="alert" style="margin-top: 20px; margin-bottom: 0px;" invisible="not payment_ids">
                     <strong>Desglose de Pagos Aplicados</strong>
                 </div>
