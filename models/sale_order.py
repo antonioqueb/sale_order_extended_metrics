@@ -70,7 +70,7 @@ class SaleOrder(models.Model):
                     'returned_qty': returned_qty,
                     'returned_amount': returned_amount,
                     'price_unit': line.price_unit,
-                    'uom': line.product_uom.name if line.product_uom else '',
+                    'uom': line.product_uom_id.name if line.product_uom_id else '',
                 })
 
             # --- Payment metrics ---
