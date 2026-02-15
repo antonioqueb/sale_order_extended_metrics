@@ -1,0 +1,364 @@
+/* ============================================
+   SALE ORDER EXTENDED METRICS - Widget Styles
+   Consistent with delivery_tracker aesthetic
+   ============================================ */
+
+.sm-root {
+    width: 100%;
+    padding: 16px 0;
+    font-family: inherit;
+}
+
+/* ========== SUMMARY CARDS ========== */
+.sm-summary-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.sm-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.sm-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+}
+
+.sm-card-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    color: #fff;
+    margin-bottom: 4px;
+    flex-shrink: 0;
+}
+
+.sm-icon-fulfillment { background: linear-gradient(135deg, #3b82f6, #6366f1); }
+.sm-icon-returns { background: linear-gradient(135deg, #ef4444, #f97316); }
+.sm-icon-paid { background: linear-gradient(135deg, #22c55e, #10b981); }
+.sm-icon-pending { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+.sm-icon-ok { background: linear-gradient(135deg, #22c55e, #34d399); }
+.sm-icon-neutral { background: linear-gradient(135deg, #9ca3af, #6b7280); }
+
+.sm-card-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.sm-card-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6b7280;
+}
+
+.sm-card-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+}
+
+.sm-val-danger { color: #ef4444; }
+.sm-val-ok { color: #22c55e; }
+
+.sm-card-sub {
+    font-size: 11.5px;
+    color: #9ca3af;
+    margin-top: 2px;
+}
+
+/* Card mini progress bar */
+.sm-card-bar {
+    width: 100%;
+    height: 4px;
+    background: #f1f5f9;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 6px;
+}
+
+.sm-card-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.4s ease;
+}
+
+/* ========== SECTIONS ========== */
+.sm-section {
+    margin-bottom: 16px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.sm-section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    cursor: pointer;
+    user-select: none;
+    border-bottom: 1px solid #f1f5f9;
+    background: #fafbfc;
+    transition: background 0.15s;
+}
+
+.sm-section-header:hover {
+    background: #f3f4f6;
+}
+
+.sm-section-caret {
+    color: #6b7280;
+    font-size: 14px;
+    width: 14px;
+    text-align: center;
+}
+
+.sm-section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.sm-section-count {
+    font-size: 11px;
+    color: #9ca3af;
+    margin-left: auto;
+    font-weight: 500;
+}
+
+/* ========== TABLE ========== */
+.sm-table-container {
+    overflow-x: auto;
+}
+
+.sm-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.sm-table thead th {
+    background: #f8f9fb;
+    color: #6b7280;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 10.5px;
+    letter-spacing: 0.5px;
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap;
+}
+
+.sm-th-num,
+.sm-td-num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.sm-th-progress {
+    min-width: 140px;
+}
+
+.sm-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.sm-row td {
+    padding: 10px 12px;
+    vertical-align: middle;
+    color: #374151;
+}
+
+.sm-row:hover {
+    background: #f8fafc;
+}
+
+.sm-row-clickable {
+    cursor: pointer;
+}
+
+.sm-row-clickable:hover {
+    background: #eff6ff;
+}
+
+/* Product column */
+.sm-td-product {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 320px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+}
+
+.sm-prod-icon {
+    color: #94a3b8;
+    font-size: 11px;
+    flex-shrink: 0;
+}
+
+.sm-uom {
+    font-size: 11px;
+    color: #9ca3af;
+    margin-left: 4px;
+}
+
+/* ========== PROGRESS BAR (inline) ========== */
+.sm-td-progress {
+    min-width: 130px;
+}
+
+.sm-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sm-bar {
+    flex: 1;
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.sm-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+}
+
+/* Fill colors */
+.sm-fill-done { background: linear-gradient(90deg, #22c55e, #34d399); }
+.sm-fill-partial { background: linear-gradient(90deg, #3b82f6, #6366f1); }
+.sm-fill-zero { background: #d1d5db; }
+
+/* Badge pct */
+.sm-bar-pct {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.sm-badge-done {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.sm-badge-partial {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.sm-badge-zero {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+/* Danger numbers (returns) */
+.sm-num-danger {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+/* Paid numbers */
+.sm-num-paid {
+    color: #16a34a;
+}
+
+/* Bold cells */
+.sm-td-bold {
+    font-weight: 700;
+}
+
+/* Date column */
+.sm-td-date {
+    white-space: nowrap;
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.sm-date-icon {
+    color: #9ca3af;
+    margin-right: 5px;
+}
+
+/* Link style */
+.sm-td-link {
+    color: #3b82f6;
+    font-weight: 500;
+}
+
+.sm-row-clickable:hover .sm-td-link {
+    text-decoration: underline;
+}
+
+/* ========== TOTALS ROW ========== */
+.sm-totals-row {
+    background: #f8f9fb;
+    border-top: 2px solid #e5e7eb;
+}
+
+.sm-totals-row td {
+    padding: 10px 12px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.sm-td-totals-label {
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    color: #6b7280;
+    font-weight: 700;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 992px) {
+    .sm-summary-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .sm-summary-row {
+        grid-template-columns: 1fr;
+    }
+    .sm-th-progress,
+    .sm-td-progress {
+        display: none;
+    }
+    .sm-table thead th,
+    .sm-row td {
+        padding: 8px 8px;
+        font-size: 12px;
+    }
+}

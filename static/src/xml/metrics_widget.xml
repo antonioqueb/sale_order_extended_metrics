@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="sale_order_extended_metrics.SaleMetricsWidget">
+        <div class="sm-root">
+
+            <!-- ========== SUMMARY CARDS ========== -->
+            <div class="sm-summary-row">
+                <!-- Fulfillment -->
+                <div class="sm-card">
+                    <div class="sm-card-icon sm-icon-fulfillment">
+                        <i class="fa fa-check-circle"/>
+                    </div>
+                    <div class="sm-card-content">
+                        <span class="sm-card-label">Cumplimiento</span>
+                        <span class="sm-card-value">
+                            <t t-esc="state.summary.overall_fulfillment"/>%
+                        </span>
+                    </div>
+                    <div class="sm-card-bar">
+                        <div t-attf-class="sm-card-bar-fill #{getFulfillmentClass(state.summary.overall_fulfillment)}"
+                             t-attf-style="width:#{Math.min(state.summary.overall_fulfillment, 100)}%"/>
+                    </div>
+                </div>
+
+                <!-- Returned -->
+                <div class="sm-card">
+                    <div t-attf-class="sm-card-icon #{state.summary.has_returns ? 'sm-icon-returns' : 'sm-icon-neutral'}">
+                        <i class="fa fa-undo"/>
+                    </div>
+                    <div class="sm-card-content">
+                        <span class="sm-card-label">Devoluciones</span>
+                        <span class="sm-card-value">
+                            <t t-esc="state.summary.currency"/><t t-esc="formatNumber(state.summary.total_returned_amount)"/>
+                        </span>
+                    </div>
+                    <div class="sm-card-sub">
+                        <t t-esc="formatQty(state.summary.total_returned_qty)"/> uds devueltas
+                    </div>
+                </div>
+
+                <!-- Paid -->
+                <div class="sm-card">
+                    <div t-attf-class="sm-card-icon #{state.summary.has_payments ? 'sm-icon-paid' : 'sm-icon-neutral'}">
+                        <i class="fa fa-money"/>
+                    </div>
+                    <div class="sm-card-content">
+                        <span class="sm-card-label">Pagado</span>
+                        <span class="sm-card-value">
+                            <t t-esc="state.summary.currency"/><t t-esc="formatNumber(state.summary.total_paid)"/>
+                        </span>
+                    </div>
+                    <div class="sm-card-sub">
+                        de <t t-esc="state.summary.currency"/><t t-esc="formatNumber(state.summary.amount_total)"/>
+                    </div>
+                </div>
+
+                <!-- Pending -->
+                <div class="sm-card">
+                    <div t-attf-class="sm-card-icon #{state.summary.amount_pending > 0 ? 'sm-icon-pending' : 'sm-icon-ok'}">
+                        <i t-attf-class="fa #{state.summary.amount_pending > 0 ? 'fa-clock-o' : 'fa-check'}"/>
+                    </div>
+                    <div class="sm-card-content">
+                        <span class="sm-card-label">Pendiente</span>
+                        <span t-attf-class="sm-card-value #{state.summary.amount_pending > 0 ? 'sm-val-danger' : 'sm-val-ok'}">
+                            <t t-esc="state.summary.currency"/><t t-esc="formatNumber(state.summary.amount_pending)"/>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== FULFILLMENT TABLE ========== -->
+            <t t-if="state.lines.length">
+                <div class="sm-section">
+                    <div class="sm-section-header" t-on-click="toggleLines">
+                        <i t-attf-class="fa #{state.showLines ? 'fa-caret-down' : 'fa-caret-right'} sm-section-caret"/>
+                        <span class="sm-section-title">Detalle por Línea</span>
+                        <span class="sm-section-count"><t t-esc="state.lines.length"/> línea(s)</span>
+                    </div>
+                    <t t-if="state.showLines">
+                        <div class="sm-table-container">
+                            <table class="sm-table">
+                                <thead>
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th class="sm-th-num">Ordenado</th>
+                                        <th class="sm-th-num">Entregado</th>
+                                        <th class="sm-th-progress">Cumplimiento</th>
+                                        <th class="sm-th-num">Devuelto</th>
+                                        <th class="sm-th-num">Dev. ($)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="state.lines" t-as="line" t-key="line_index">
+                                        <tr class="sm-row">
+                                            <td class="sm-td-product">
+                                                <i class="fa fa-cube sm-prod-icon"/>
+                                                <span t-esc="line.product" t-att-title="line.product"/>
+                                            </td>
+                                            <td class="sm-td-num">
+                                                <t t-esc="formatQty(line.ordered)"/>
+                                                <span class="sm-uom" t-esc="line.uom"/>
+                                            </td>
+                                            <td class="sm-td-num">
+                                                <t t-esc="formatQty(line.delivered)"/>
+                                            </td>
+                                            <td class="sm-td-progress">
+                                                <div class="sm-bar-wrap">
+                                                    <div class="sm-bar">
+                                                        <div t-attf-class="sm-bar-fill #{getFulfillmentClass(line.fulfillment)}"
+                                                             t-attf-style="width:#{Math.min(line.fulfillment, 100)}%"/>
+                                                    </div>
+                                                    <span t-attf-class="sm-bar-pct #{getFulfillmentBadge(line.fulfillment)}">
+                                                        <t t-esc="line.fulfillment"/>%
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td t-attf-class="sm-td-num #{line.returned_qty > 0 ? 'sm-num-danger' : ''}">
+                                                <t t-esc="formatQty(line.returned_qty)"/>
+                                            </td>
+                                            <td t-attf-class="sm-td-num #{line.returned_amount > 0 ? 'sm-num-danger' : ''}">
+                                                <t t-if="line.returned_amount > 0">
+                                                    <t t-esc="state.summary.currency"/><t t-esc="formatNumber(line.returned_amount)"/>
+                                                </t>
+                                                <t t-else="">—</t>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                                <!-- Totals row -->
+                                <tfoot>
+                                    <tr class="sm-totals-row">
+                                        <td class="sm-td-totals-label">Totales</td>
+                                        <td class="sm-td-num sm-td-bold"><t t-esc="formatQty(state.summary.total_ordered)"/></td>
+                                        <td class="sm-td-num sm-td-bold"><t t-esc="formatQty(state.summary.total_delivered)"/></td>
+                                        <td class="sm-td-progress">
+                                            <span t-attf-class="sm-bar-pct #{getFulfillmentBadge(state.summary.overall_fulfillment)}">
+                                                <t t-esc="state.summary.overall_fulfillment"/>%
+                                            </span>
+                                        </td>
+                                        <td t-attf-class="sm-td-num sm-td-bold #{state.summary.total_returned_qty > 0 ? 'sm-num-danger' : ''}">
+                                            <t t-esc="formatQty(state.summary.total_returned_qty)"/>
+                                        </td>
+                                        <td t-attf-class="sm-td-num sm-td-bold #{state.summary.total_returned_amount > 0 ? 'sm-num-danger' : ''}">
+                                            <t t-if="state.summary.total_returned_amount > 0">
+                                                <t t-esc="state.summary.currency"/><t t-esc="formatNumber(state.summary.total_returned_amount)"/>
+                                            </t>
+                                            <t t-else="">—</t>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </t>
+                </div>
+            </t>
+
+            <!-- ========== PAYMENTS TABLE ========== -->
+            <t t-if="state.summary.has_payments">
+                <div class="sm-section">
+                    <div class="sm-section-header" t-on-click="togglePayments">
+                        <i t-attf-class="fa #{state.showPayments ? 'fa-caret-down' : 'fa-caret-right'} sm-section-caret"/>
+                        <span class="sm-section-title">Desglose de Pagos</span>
+                        <span class="sm-section-count"><t t-esc="state.payments.length"/> pago(s)</span>
+                    </div>
+                    <t t-if="state.showPayments">
+                        <div class="sm-table-container">
+                            <table class="sm-table">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Referencia</th>
+                                        <th>Diario</th>
+                                        <th class="sm-th-num">Monto</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="state.payments" t-as="pay" t-key="pay.id">
+                                        <tr class="sm-row sm-row-clickable" t-on-click="() => this.openPayment(pay.id)">
+                                            <td class="sm-td-date">
+                                                <i class="fa fa-calendar-o sm-date-icon"/>
+                                                <t t-esc="pay.date"/>
+                                            </td>
+                                            <td class="sm-td-link">
+                                                <t t-esc="pay.name"/>
+                                            </td>
+                                            <td><t t-esc="pay.journal"/></td>
+                                            <td class="sm-td-num sm-td-bold sm-num-paid">
+                                                <t t-esc="pay.currency"/><t t-esc="formatNumber(pay.amount)"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="sm-totals-row">
+                                        <td class="sm-td-totals-label" colspan="3">Total Pagado</td>
+                                        <td class="sm-td-num sm-td-bold sm-num-paid">
+                                            <t t-esc="state.summary.currency"/><t t-esc="formatNumber(state.summary.total_paid)"/>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </t>
+                </div>
+            </t>
+
+        </div>
+    </t>
+
+</templates>
