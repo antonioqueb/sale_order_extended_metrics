@@ -5,7 +5,7 @@
     'summary': 'Fulfillment %, Returns, and Payment Breakdown on SO',
     'author': 'Alphaqueb Consulting',
     'website': 'https://www.alphaqueb.com',
-    'depends': ['sale', 'sale_management', 'stock', 'account'],
+    'depends': ['sale', 'sale_management', 'stock', 'account', 'stock_transit_allocation'],
     'data': [
         'views/sale_order_views.xml',
     ],

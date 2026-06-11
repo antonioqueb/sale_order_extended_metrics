@@ -8,15 +8,6 @@
         <field name="priority">60</field>
         <field name="arch" type="xml">
 
-            <!-- Métricas en líneas -->
-            <xpath expr="//field[@name='order_line']/list//field[@name='qty_delivered']" position="after">
-                <field name="fulfillment_percent" widget="percentage" optional="show" 
-                    column_invisible="parent.state != 'sale'"
-                    decoration-success="fulfillment_percent == 1" 
-                    decoration-warning="fulfillment_percent &lt; 1 and fulfillment_percent &gt; 0"/>
-                <field name="returned_amount" optional="hide" column_invisible="parent.state != 'sale'"/>
-            </xpath>
-
             <!-- Pendiente por Pagar (Debajo del total) -->
             <xpath expr="//field[@name='tax_totals']" position="after">
                 <field name="amount_pending_to_pay" 
@@ -30,6 +21,27 @@
                 <div class="o_group" style="width: 100%;">
                     <field name="metrics_data" widget="sale_metrics_widget" nolabel="1"/>
                 </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Métricas por línea en la pestaña Logística (stock_transit_allocation) -->
+    <record id="view_order_form_extended_metrics_logistics" model="ir.ui.view">
+        <field name="name">sale.order.form.extended.metrics.logistics</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="stock_transit_allocation.view_order_form_transit_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='logistics_lines']//list/field[@name='qty_delivered']" position="after">
+                <field name="fulfillment_percent"
+                       string="% Cumplimiento"
+                       widget="percentage"
+                       readonly="1"
+                       decoration-success="fulfillment_percent == 1"
+                       decoration-warning="fulfillment_percent &lt; 1 and fulfillment_percent &gt; 0"/>
+                <field name="returned_amount"
+                       string="Monto Devuelto"
+                       optional="hide"
+                       readonly="1"/>
             </xpath>
         </field>
     </record>
