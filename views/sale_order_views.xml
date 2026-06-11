@@ -14,9 +14,6 @@
                     column_invisible="parent.state != 'sale'"
                     decoration-success="fulfillment_percent == 1" 
                     decoration-warning="fulfillment_percent &lt; 1 and fulfillment_percent &gt; 0"/>
-                <field name="returned_qty_m2" optional="show" 
-                    column_invisible="parent.state != 'sale'"
-                    decoration-danger="returned_qty_m2 &gt; 0"/>
                 <field name="returned_amount" optional="hide" column_invisible="parent.state != 'sale'"/>
             </xpath>
 
