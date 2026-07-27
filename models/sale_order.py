@@ -94,7 +94,21 @@ class SaleOrder(models.Model):
                             'currency': pay.currency_id.symbol or '$',
                         })
                     if pay:
-                        total_paid += partial.amount
+                        # partial.amount está en moneda de COMPAÑÍA; el total
+                        # de la orden en moneda de la ORDEN. Sumarlos directo
+                        # daba un "Pendiente por Pagar" falso en toda venta en
+                        # divisa. Se convierte a la moneda de la orden.
+                        paid_amount = partial.amount
+                        company = order.company_id or self.env.company
+                        company_currency = company.currency_id
+                        if order.currency_id and company_currency and order.currency_id != company_currency:
+                            paid_amount = company_currency._convert(
+                                paid_amount,
+                                order.currency_id,
+                                company,
+                                pay.date or fields.Date.today(),
+                            )
+                        total_paid += paid_amount
 
             amount_pending = order.amount_total - total_paid
 
