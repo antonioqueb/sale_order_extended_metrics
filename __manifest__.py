@@ -1,6 +1,6 @@
 {
     'name': 'Sale Order Extended Metrics (Odoo 19)',
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Sales',
     'summary': 'Fulfillment %, Returns, and Payment Breakdown on SO',
     'author': 'Alphaqueb Consulting',

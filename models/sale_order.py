@@ -1,4 +1,7 @@
 from odoo import models, fields, api
+from odoo.addons.sale_order_extended_metrics.models.som_date_format import (
+    som_format_date,
+)
 import json
 
 
@@ -87,7 +90,7 @@ class SaleOrder(models.Model):
                         payment_ids_seen.add(pay.id)
                         payments_data.append({
                             'id': pay.id,
-                            'date': pay.date.strftime('%d/%m/%Y') if pay.date else '',
+                            'date': som_format_date(pay.date, empty=''),
                             'name': pay.name or '',
                             'journal': pay.journal_id.name or '',
                             'amount': pay.amount,
