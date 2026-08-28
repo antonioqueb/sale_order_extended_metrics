@@ -47,6 +47,27 @@ class SaleOrder(models.Model):
                                  help='Días desde la orden (sin pago) o desde el último pago (con saldo).')
     x_flow_last_payment = fields.Date(string='Último pago', compute='_compute_flow_light', store=True)
     x_flow_paid_pct = fields.Float(string='% Pagado', compute='_compute_flow_light', store=True, digits=(5, 1))
+    # Asignación de placas (fuente única: tc_qty_assigned_lots de la línea,
+    # stock_transit_allocation). En vivo (no almacenado): la asignación cambia
+    # con cada placa que se asigna o se libera.
+    x_flow_assigned_pct = fields.Float(
+        string='% Asignado', compute='_compute_flow_assigned', digits=(5, 1),
+        help='Cantidad cubierta por placas/lotes asignados ÷ cantidad vendida (líneas de producto).')
+    x_flow_assigned_m2 = fields.Float(
+        string='Apartado (m²)', compute='_compute_flow_assigned', digits='Product Unit of Measure',
+        help='Suma de la cantidad asignada (placas/lotes) en las líneas de producto de la orden.')
+
+    def _compute_flow_assigned(self):
+        Line = self.env['sale.order.line']
+        has_tc = 'tc_qty_assigned_lots' in Line._fields
+        for order in self:
+            lines = order.order_line.filtered(
+                lambda l: not l.display_type and l.product_id and l.product_id.type != 'service')
+            ordered = sum(lines.mapped('product_uom_qty'))
+            assigned = sum(lines.mapped('tc_qty_assigned_lots')) if has_tc else 0.0
+            order.x_flow_assigned_m2 = assigned
+            order.x_flow_assigned_pct = round(max(min(assigned / ordered * 100.0, 100.0), 0.0), 1) if ordered > 0 else 0.0
+
     x_flow_delivered_pct = fields.Float(
         string='% Entregado', compute='_compute_flow_light', store=True, digits=(5, 1),
         help='Cantidad entregada ÷ cantidad vendida (líneas de producto). Entregar sin cobrar AGRAVA el semáforo.')
