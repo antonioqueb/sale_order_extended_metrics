@@ -38,7 +38,7 @@ class SaleOrder(models.Model):
 
     x_flow_status = fields.Selection(
         FLOW_STATES, string='Semáforo', compute='_compute_flow_light', store=True, index=True,
-        help='Nueva/Sin pago/Abandonada: sin ningún pago, por días desde la orden. '
+        help='Nueva/Sin pago/Dejado: sin ningún pago, por días desde la orden. '
              'Al día/Lenta/Estancada: con pago pero saldo pendiente, por días desde el último pago. '
              'Pagada: 100% cubierta.')
     x_flow_rank = fields.Integer(string='Orden semáforo', compute='_compute_flow_light', store=True,
