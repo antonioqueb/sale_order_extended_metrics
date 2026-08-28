@@ -21,7 +21,7 @@
                         <div class="o_setting_right_pane">
                             <label for="flow_stale_days"/>
                             <field name="flow_stale_days" class="oe_inline"/>
-                            <div class="text-muted">Con anticipo y saldo pendiente: días desde el último pago para pasar de "Al corriente" a "Lenta".</div>
+                            <div class="text-muted">Con anticipo y saldo pendiente: días desde el último pago para pasar de "Al día" a "Lenta".</div>
                             <label for="flow_stalled_days" class="mt-2"/>
                             <field name="flow_stalled_days" class="oe_inline"/>
                             <div class="text-muted">Días desde el último pago para "Estancada".</div>

@@ -6,7 +6,7 @@ import { standardFieldProps } from "@web/views/fields/standard_field_props";
 
 const META = {
     new: { label: "Nueva", hint: "Sin pago, dentro del plazo del apartado" },
-    ok: { label: "Al corriente", hint: "Con pago reciente y saldo pendiente" },
+    ok: { label: "Al día", hint: "Con pago reciente y saldo pendiente" },
     paid: { label: "Pagada", hint: "Cubierta al 100 %" },
     slow: { label: "Lenta", hint: "Con anticipo, pero sin pagos recientes" },
     stalled: { label: "Estancada", hint: "Con anticipo, meses sin dinero nuevo" },

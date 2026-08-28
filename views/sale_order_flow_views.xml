@@ -30,7 +30,7 @@
                 <filter name="flow_attention" string="🚩 Necesitan atención"
                         domain="[('x_flow_status', 'in', ('nopay', 'dead', 'stalled', 'slow'))]"/>
                 <filter name="flow_new" string="Nuevas (sin pago, en plazo)" domain="[('x_flow_status', '=', 'new')]"/>
-                <filter name="flow_ok" string="Al corriente" domain="[('x_flow_status', '=', 'ok')]"/>
+                <filter name="flow_ok" string="Al día" domain="[('x_flow_status', '=', 'ok')]"/>
                 <filter name="flow_slow" string="Lentas" domain="[('x_flow_status', '=', 'slow')]"/>
                 <filter name="flow_stalled" string="Estancadas" domain="[('x_flow_status', '=', 'stalled')]"/>
                 <filter name="flow_nopay" string="Sin pago (fuera de plazo)" domain="[('x_flow_status', '=', 'nopay')]"/>
