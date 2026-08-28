@@ -47,6 +47,9 @@ class SaleOrder(models.Model):
                                  help='Días desde la orden (sin pago) o desde el último pago (con saldo).')
     x_flow_last_payment = fields.Date(string='Último pago', compute='_compute_flow_light', store=True)
     x_flow_paid_pct = fields.Float(string='% Pagado', compute='_compute_flow_light', store=True, digits=(5, 1))
+    x_flow_delivered_pct = fields.Float(
+        string='% Entregado', compute='_compute_flow_light', store=True, digits=(5, 1),
+        help='Cantidad entregada ÷ cantidad vendida (líneas de producto). Entregar sin cobrar AGRAVA el semáforo.')
 
     # ------------------------------------------------------------------
     @api.model
@@ -83,14 +86,31 @@ class SaleOrder(models.Model):
                 dates.append(p.max_date)
         return max(dates) if dates else False
 
+    def _flow_delivered_pct(self):
+        """% entregado ponderado por cantidad (solo líneas de producto)."""
+        self.ensure_one()
+        lines = self.order_line.filtered(
+            lambda l: not l.display_type and l.product_id and l.product_id.type != 'service')
+        ordered = sum(lines.mapped('product_uom_qty'))
+        if ordered <= 0:
+            return 0.0
+        delivered = sum(lines.mapped('qty_delivered'))
+        return max(min(delivered / ordered * 100.0, 100.0), 0.0)
+
+    # Entregar material sin tener el dinero es lo más grave: el % entregado
+    # AGRAVA un nivel el semáforo (28 ago 2026).
+    _ESCALATE = {'new': 'nopay', 'nopay': 'dead', 'ok': 'slow', 'slow': 'stalled'}
+
     @api.depends('state', 'date_order', 'amount_total', 'currency_id',
                  'delivery_paid_amount', 'delivery_is_fully_paid',
-                 'invoice_ids.state', 'invoice_ids.amount_residual', 'invoice_ids.payment_state')
+                 'invoice_ids.state', 'invoice_ids.amount_residual', 'invoice_ids.payment_state',
+                 'order_line.qty_delivered', 'order_line.product_uom_qty')
     def _compute_flow_light(self):
         th = self._flow_thresholds()
         today = fields.Date.context_today(self)
         for order in self:
             status, days, last_pay, pct = 'none', 0, False, 0.0
+            delivered_pct = order._flow_delivered_pct() if order.state == 'sale' else 0.0
             total = order.amount_total or 0.0
             if order.state == 'sale' and total > 0:
                 paid = order.delivery_paid_amount or 0.0
@@ -117,7 +137,18 @@ class SaleOrder(models.Model):
                         status = 'slow'
                     else:
                         status = 'stalled'
+                # ── Agravante por entrega ──
+                # Sin ningún pago y ya se entregó algo: sube un nivel de
+                # inmediato (Nueva→Sin pago, Sin pago→Dejado).
+                # Con pago parcial: si lo entregado va muy por delante de lo
+                # pagado (más de 20 puntos), sube un nivel (Al día→Lenta,
+                # Lenta→Estancada).
+                if status in ('new', 'nopay') and delivered_pct >= 1.0:
+                    status = self._ESCALATE[status]
+                elif status in ('ok', 'slow') and delivered_pct > pct + 20.0:
+                    status = self._ESCALATE[status]
             order.x_flow_status = status
+            order.x_flow_delivered_pct = round(delivered_pct, 1)
             order.x_flow_rank = FLOW_RANK.get(status, 9)
             order.x_flow_days = days
             order.x_flow_last_payment = last_pay

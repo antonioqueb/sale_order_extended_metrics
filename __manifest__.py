@@ -1,6 +1,6 @@
 {
     'name': 'Sale Order Extended Metrics (Odoo 19)',
-    'version': '19.0.2.0.3',
+    'version': '19.0.2.1.0',
     'category': 'Sales',
     'summary': 'Fulfillment %, Returns, Payment Breakdown y Semáforo de flujo de dinero en la orden de venta',
     'author': 'Alphaqueb Consulting',

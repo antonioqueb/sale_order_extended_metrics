@@ -25,6 +25,7 @@
                             <label for="flow_stalled_days" class="mt-2"/>
                             <field name="flow_stalled_days" class="oe_inline"/>
                             <div class="text-muted">Días desde el último pago para "Estancada".</div>
+                            <div class="text-muted mt-2"><strong>Agravante por entrega:</strong> sin ningún pago y con material entregado, el semáforo sube un nivel de inmediato; con pago parcial, si lo entregado supera lo pagado por más de 20 puntos, también sube un nivel.</div>
                         </div>
                     </div>
                 </div>

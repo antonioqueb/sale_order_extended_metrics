@@ -32,7 +32,11 @@ export class FlowLightField extends Component {
         const d = this.days;
         const m = this.meta;
         if (!m.label) return "";
-        return d ? `${m.label} · ${d} día(s) — ${m.hint}` : `${m.label} — ${m.hint}`;
+        const data = this.props.record.data;
+        const parts = [d ? `${m.label} · ${d} día(s)` : m.label];
+        if (data.x_flow_delivered_pct !== undefined) parts.push(`entregado ${Number(data.x_flow_delivered_pct || 0).toFixed(0)}%`);
+        if (data.x_flow_paid_pct !== undefined) parts.push(`pagado ${Number(data.x_flow_paid_pct || 0).toFixed(0)}%`);
+        return `${parts.join(" · ")} — ${m.hint}`;
     }
 }
 

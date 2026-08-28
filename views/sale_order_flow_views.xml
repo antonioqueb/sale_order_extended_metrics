@@ -13,6 +13,7 @@
                 <field name="x_flow_status" widget="flow_light" string="Semáforo"/>
                 <field name="x_flow_days" string="Días" optional="show"/>
                 <field name="x_flow_paid_pct" string="% Pagado" optional="show"/>
+                <field name="x_flow_delivered_pct" string="% Entregado" optional="show"/>
                 <field name="x_flow_last_payment" string="Último pago" optional="hide"/>
                 <field name="x_flow_rank" column_invisible="1"/>
             </xpath>
@@ -36,6 +37,11 @@
                 <filter name="flow_nopay" string="Sin pago (fuera de plazo)" domain="[('x_flow_status', '=', 'nopay')]"/>
                 <filter name="flow_dead" string="Dejados" domain="[('x_flow_status', '=', 'dead')]"/>
                 <filter name="flow_paid" string="Pagadas 100%" domain="[('x_flow_status', '=', 'paid')]"/>
+                <separator/>
+                <filter name="flow_delivered_unpaid" string="⚠️ Entregado sin cobrar"
+                        domain="[('x_flow_delivered_pct', '>', 0), ('x_flow_paid_pct', '&lt;', 100), ('state', '=', 'sale')]"/>
+                <filter name="flow_delivered_full_unpaid" string="Entregado 100% y sin pagar al 100%"
+                        domain="[('x_flow_delivered_pct', '>=', 100), ('x_flow_paid_pct', '&lt;', 100), ('state', '=', 'sale')]"/>
                 <filter name="group_flow" string="Semáforo" context="{'group_by': 'x_flow_status'}"/>
             </xpath>
         </field>
@@ -50,6 +56,8 @@
             <xpath expr="//field[@name='date_order'][not(ancestor::field)]" position="after">
                 <field name="x_flow_status" widget="flow_light" invisible="state != 'sale'"/>
                 <field name="x_flow_days" invisible="state != 'sale' or x_flow_status in ('paid', 'none')"/>
+                <field name="x_flow_delivered_pct" invisible="state != 'sale'"/>
+                <field name="x_flow_paid_pct" invisible="state != 'sale'"/>
                 <field name="x_flow_last_payment" invisible="not x_flow_last_payment"/>
             </xpath>
         </field>
