@@ -1,0 +1,57 @@
+<odoo>
+    <!-- Lista de ÓRDENES DE VENTA (no presupuestos): semáforo como primera columna -->
+    <record id="view_order_tree_flow_light" model="ir.ui.view">
+        <field name="name">sale.order.tree.flow.light</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <!-- Prioridad 1: esta herencia se aplica ANTES que las demás (p. ej. la
+             que inserta "Referencia" antes del folio), así el semáforo queda
+             como PRIMERA columna, a la izquierda de todo. -->
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="before">
+                <field name="x_flow_status" widget="flow_light" string="Semáforo"/>
+                <field name="x_flow_days" string="Días" optional="show"/>
+                <field name="x_flow_paid_pct" string="% Pagado" optional="show" widget="progressbar"/>
+                <field name="x_flow_last_payment" string="Último pago" optional="hide"/>
+                <field name="x_flow_rank" column_invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Búsqueda: filtros y agrupación por semáforo -->
+    <record id="view_sales_order_filter_flow_light" model="ir.ui.view">
+        <field name="name">sale.order.search.flow.light</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <separator/>
+                <filter name="flow_attention" string="🚩 Necesitan atención"
+                        domain="[('x_flow_status', 'in', ('nopay', 'dead', 'stalled', 'slow'))]"/>
+                <filter name="flow_new" string="Nuevas (sin pago, en plazo)" domain="[('x_flow_status', '=', 'new')]"/>
+                <filter name="flow_ok" string="Al corriente" domain="[('x_flow_status', '=', 'ok')]"/>
+                <filter name="flow_slow" string="Lentas" domain="[('x_flow_status', '=', 'slow')]"/>
+                <filter name="flow_stalled" string="Estancadas" domain="[('x_flow_status', '=', 'stalled')]"/>
+                <filter name="flow_nopay" string="Sin pago (fuera de plazo)" domain="[('x_flow_status', '=', 'nopay')]"/>
+                <filter name="flow_dead" string="Abandonadas" domain="[('x_flow_status', '=', 'dead')]"/>
+                <filter name="flow_paid" string="Pagadas 100%" domain="[('x_flow_status', '=', 'paid')]"/>
+                <filter name="group_flow" string="Semáforo" context="{'group_by': 'x_flow_status'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Formulario: el mismo semáforo junto a la fecha -->
+    <record id="view_order_form_flow_light" model="ir.ui.view">
+        <field name="name">sale.order.form.flow.light</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_order'][not(ancestor::field)]" position="after">
+                <field name="x_flow_status" widget="flow_light" invisible="state != 'sale'"/>
+                <field name="x_flow_days" invisible="state != 'sale' or x_flow_status in ('paid', 'none')"/>
+                <field name="x_flow_last_payment" invisible="not x_flow_last_payment"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

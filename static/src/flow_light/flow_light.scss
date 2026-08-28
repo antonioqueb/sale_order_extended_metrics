@@ -1,0 +1,18 @@
+// Semáforo pastel: celeste = nueva … casi negro = abandonada.
+.o_flow_light {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 2px 9px 2px 6px; border-radius: 999px;
+    font-size: 0.76rem; font-weight: 700; white-space: nowrap; line-height: 1.4;
+    .o_flow_dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; background: currentColor; opacity: 0.9; }
+}
+.o_flow_new     { background: #d6ecff; color: #1e4e79; }
+.o_flow_ok      { background: #d9f4e4; color: #1d6b45; }
+.o_flow_paid    { background: #bfe8cf; color: #14532d; }
+.o_flow_slow    { background: #fdf0c2; color: #7a5a00; }
+.o_flow_stalled { background: #f8d6bd; color: #7c3a10; }
+.o_flow_nopay   { background: #f9cdd6; color: #7f1d2d; }
+.o_flow_dead    { background: #3b3b3b; color: #ffffff; }
+.o_flow_none    { color: #b0b7c3; background: transparent; padding-left: 8px; }
+
+// En la lista, la columna queda compacta y la fila NO se pinta completa.
+.o_list_table td .o_flow_light { margin: -2px 0; }

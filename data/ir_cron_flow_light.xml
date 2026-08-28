@@ -1,0 +1,11 @@
+<odoo>
+    <record id="cron_flow_light_refresh" model="ir.cron">
+        <field name="name">Ventas: recalcular semáforo de flujo de dinero</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_flow_light_refresh()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

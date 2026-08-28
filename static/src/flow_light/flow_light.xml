@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="sale_order_extended_metrics.FlowLightField">
+        <span t-if="value !== 'none'" t-att-class="'o_flow_light o_flow_' + value" t-att-title="title">
+            <i class="o_flow_dot"/>
+            <span class="o_flow_label" t-esc="meta.label"/>
+        </span>
+        <span t-else="" class="o_flow_light o_flow_none" title="Solo aplica a órdenes confirmadas">—</span>
+    </t>
+</templates>
