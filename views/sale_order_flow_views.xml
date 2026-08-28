@@ -12,7 +12,7 @@
             <xpath expr="//field[@name='name']" position="before">
                 <field name="x_flow_status" widget="flow_light" string="Semáforo"/>
                 <field name="x_flow_days" string="Días" optional="show"/>
-                <field name="x_flow_paid_pct" string="% Pagado" optional="show" widget="progressbar"/>
+                <field name="x_flow_paid_pct" string="% Pagado" optional="show"/>
                 <field name="x_flow_last_payment" string="Último pago" optional="hide"/>
                 <field name="x_flow_rank" column_invisible="1"/>
             </xpath>
