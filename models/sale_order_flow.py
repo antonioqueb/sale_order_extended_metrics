@@ -19,7 +19,7 @@ FLOW_STATES = [
     ('slow', 'Lenta'),
     ('stalled', 'Estancada'),
     ('nopay', 'Sin pago'),
-    ('dead', 'Abandonada'),
+    ('dead', 'Dejado'),
     ('none', 'N/A'),
 ]
 # Orden del semáforo: 0 = peor (más viejo/sin dinero) … 6 = mejor.

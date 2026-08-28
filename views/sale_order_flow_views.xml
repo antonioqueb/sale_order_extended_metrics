@@ -34,7 +34,7 @@
                 <filter name="flow_slow" string="Lentas" domain="[('x_flow_status', '=', 'slow')]"/>
                 <filter name="flow_stalled" string="Estancadas" domain="[('x_flow_status', '=', 'stalled')]"/>
                 <filter name="flow_nopay" string="Sin pago (fuera de plazo)" domain="[('x_flow_status', '=', 'nopay')]"/>
-                <filter name="flow_dead" string="Abandonadas" domain="[('x_flow_status', '=', 'dead')]"/>
+                <filter name="flow_dead" string="Dejados" domain="[('x_flow_status', '=', 'dead')]"/>
                 <filter name="flow_paid" string="Pagadas 100%" domain="[('x_flow_status', '=', 'paid')]"/>
                 <filter name="group_flow" string="Semáforo" context="{'group_by': 'x_flow_status'}"/>
             </xpath>

@@ -11,7 +11,7 @@ const META = {
     slow: { label: "Lenta", hint: "Con anticipo, pero sin pagos recientes" },
     stalled: { label: "Estancada", hint: "Con anticipo, meses sin dinero nuevo" },
     nopay: { label: "Sin pago", hint: "Fuera del plazo del apartado y sin ningún pago" },
-    dead: { label: "Abandonada", hint: "Muy vieja y sin ningún pago" },
+    dead: { label: "Dejado", hint: "Muy vieja y sin ningún pago" },
     none: { label: "", hint: "" },
 };
 

@@ -14,7 +14,7 @@
                             <div class="text-muted">Sin ningún pago: hasta estos días la orden es "Nueva" (duración del apartado).</div>
                             <label for="flow_dead_days" class="mt-2"/>
                             <field name="flow_dead_days" class="oe_inline"/>
-                            <div class="text-muted">Sin ningún pago: a partir de estos días es "Abandonada" (casi negro).</div>
+                            <div class="text-muted">Sin ningún pago: a partir de estos días es "Dejado" (negro).</div>
                         </div>
                     </div>
                     <div class="col-12 col-lg-6 o_setting_box">
