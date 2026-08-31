@@ -10,12 +10,14 @@
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="before">
+                <!-- Solo el semáforo va siempre visible; el detalle se abre
+                     desde el selector de columnas cuando hace falta. -->
                 <field name="x_flow_status" widget="flow_light" string="Semáforo"/>
-                <field name="x_flow_days" string="Días" optional="show"/>
-                <field name="x_flow_paid_pct" string="% Pagado" optional="show"/>
-                <field name="x_flow_delivered_pct" string="% Entregado" optional="show"/>
-                <field name="x_flow_assigned_pct" string="% Asignado" optional="show"/>
-                <field name="x_flow_assigned_m2" string="Apartado (m²)" optional="show"/>
+                <field name="x_flow_days" string="Días" optional="hide"/>
+                <field name="x_flow_paid_pct" string="% Pagado" optional="hide"/>
+                <field name="x_flow_delivered_pct" string="% Entregado" optional="hide"/>
+                <field name="x_flow_assigned_pct" string="% Asignado" optional="hide"/>
+                <field name="x_flow_assigned_m2" string="Apartado (m²)" optional="hide"/>
                 <field name="x_flow_last_payment" string="Último pago" optional="hide"/>
                 <field name="x_flow_rank" column_invisible="1"/>
             </xpath>
@@ -55,14 +57,18 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='date_order'][not(ancestor::field)]" position="after">
-                <field name="x_flow_status" widget="flow_light" invisible="state != 'sale'"/>
-                <field name="x_flow_days" invisible="state != 'sale' or x_flow_status in ('paid', 'none')"/>
-                <field name="x_flow_delivered_pct" invisible="state != 'sale'"/>
-                <field name="x_flow_paid_pct" invisible="state != 'sale'"/>
-                <field name="x_flow_assigned_pct" invisible="state != 'sale'"/>
-                <field name="x_flow_assigned_m2" invisible="state != 'sale'"/>
-                <field name="x_flow_last_payment" invisible="not x_flow_last_payment"/>
+            <!-- El semáforo y su detalle viven en la pestaña "Otra información":
+                 la cabecera de la venta se queda solo con lo esencial del negocio. -->
+            <xpath expr="//page[@name='other_information']" position="inside">
+                <group name="flow_light" string="Semáforo de flujo" invisible="state != 'sale'">
+                    <field name="x_flow_status" widget="flow_light"/>
+                    <field name="x_flow_days" invisible="x_flow_status in ('paid', 'none')"/>
+                    <field name="x_flow_paid_pct"/>
+                    <field name="x_flow_delivered_pct"/>
+                    <field name="x_flow_assigned_pct"/>
+                    <field name="x_flow_assigned_m2"/>
+                    <field name="x_flow_last_payment" invisible="not x_flow_last_payment"/>
+                </group>
             </xpath>
         </field>
     </record>
