@@ -48,19 +48,27 @@ class SaleOrder(models.Model):
     x_flow_last_payment = fields.Date(string='Último pago', compute='_compute_flow_light', store=True)
     x_flow_paid_pct = fields.Float(string='% Pagado', compute='_compute_flow_light', store=True, digits=(5, 1))
     # Asignación de placas (fuente única: tc_qty_assigned_lots de la línea,
-    # stock_transit_allocation). En vivo (no almacenado): la asignación cambia
-    # con cada placa que se asigna o se libera.
+    # stock_transit_allocation). ALMACENADO y recalculado UNA vez al día por
+    # el cron (1 sep 2026): tc_qty_assigned_lots no está almacenado y
+    # calcularlo en vivo para cada fila hacía lentísima la lista de órdenes
+    # (la lista lee las columnas opcionales aunque estén ocultas).
     x_flow_assigned_pct = fields.Float(
-        string='% Asignado', compute='_compute_flow_assigned', digits=(5, 1),
-        help='Cantidad cubierta por placas/lotes asignados ÷ cantidad vendida (líneas de producto).')
+        string='% Asignado', compute='_compute_flow_assigned', store=True, digits=(5, 1),
+        help='Cantidad cubierta por placas/lotes asignados ÷ cantidad vendida (líneas de producto). '
+             'Se actualiza una vez al día.')
     x_flow_assigned_m2 = fields.Float(
-        string='Apartado (m²)', compute='_compute_flow_assigned', digits='Product Unit of Measure',
-        help='Suma de la cantidad asignada (placas/lotes) en las líneas de producto de la orden.')
+        string='Apartado (m²)', compute='_compute_flow_assigned', store=True, digits='Product Unit of Measure',
+        help='Suma de la cantidad asignada (placas/lotes) en las líneas de producto de la orden. '
+             'Se actualiza una vez al día.')
 
     def _compute_flow_assigned(self):
         Line = self.env['sale.order.line']
         has_tc = 'tc_qty_assigned_lots' in Line._fields
         for order in self:
+            if order.state == 'cancel':
+                order.x_flow_assigned_m2 = 0.0
+                order.x_flow_assigned_pct = 0.0
+                continue
             lines = order.order_line.filtered(
                 lambda l: not l.display_type and l.product_id and l.product_id.type != 'service')
             ordered = sum(lines.mapped('product_uom_qty'))
@@ -122,10 +130,11 @@ class SaleOrder(models.Model):
     # AGRAVA un nivel el semáforo (28 ago 2026).
     _ESCALATE = {'new': 'nopay', 'nopay': 'dead', 'ok': 'slow', 'slow': 'stalled'}
 
-    @api.depends('state', 'date_order', 'amount_total', 'currency_id',
-                 'delivery_paid_amount', 'delivery_is_fully_paid',
-                 'invoice_ids.state', 'invoice_ids.amount_residual', 'invoice_ids.payment_state',
-                 'order_line.qty_delivered', 'order_line.product_uom_qty')
+    # Solo el ESTADO dispara el recálculo en vivo (confirmar/cancelar). Pagos,
+    # facturas y entregas ya no lo disparan: cada conciliación o entrega
+    # recalculaba lotes de órdenes (consultas de último pago incluidas). El
+    # cron diario deja todo al día (1 sep 2026, pedido del cliente).
+    @api.depends('state')
     def _compute_flow_light(self):
         th = self._flow_thresholds()
         today = fields.Date.context_today(self)
@@ -176,11 +185,18 @@ class SaleOrder(models.Model):
             order.x_flow_paid_pct = round(pct, 1)
 
     @api.model
-    def _cron_flow_light_refresh(self):
-        """La edad cambia sola: recalcula a diario las órdenes confirmadas
-        que no están pagadas al 100 %."""
-        orders = self.search([('state', '=', 'sale'), ('x_flow_status', 'not in', ('paid', 'none'))])
-        orders += self.search([('state', '=', 'sale'), ('x_flow_status', '=', False)])
-        if orders:
-            orders._compute_flow_light()
+    def _cron_flow_light_refresh(self, batch=200):
+        """Cálculo DIARIO del semáforo y de la asignación (el único momento en
+        que se recalculan, salvo cambio de estado). Por lotes con commit para
+        no sostener una transacción enorme."""
+        open_orders = self.search([('state', '=', 'sale'), ('x_flow_status', 'not in', ('paid',))])
+        for i in range(0, len(open_orders), batch):
+            open_orders[i:i + batch]._compute_flow_light()
+            self.env.cr.commit()
+        # Asignación de placas: órdenes vivas (cotizaciones incluidas: también
+        # apartan material).
+        live = self.search([('state', 'in', ('draft', 'sent', 'sale'))])
+        for i in range(0, len(live), batch):
+            live[i:i + batch]._compute_flow_assigned()
+            self.env.cr.commit()
         return True
