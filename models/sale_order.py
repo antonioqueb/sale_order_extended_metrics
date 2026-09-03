@@ -77,7 +77,12 @@ class SaleOrder(models.Model):
                 })
 
             # --- Payment metrics ---
-            invoices = order.invoice_ids.filtered(lambda inv: inv.state == 'posted')
+            # SUDO deliberado (3 sep 2026): los pagos conciliados
+            # (account.payment) no son legibles por un vendedor sin
+            # contabilidad; sin esto, abrir cualquier orden con pagos
+            # aplicados reventaba con "No puede acceder a los registros
+            # 'Pagos'". Es lectura acotada a las facturas de ESTA orden.
+            invoices = order.sudo().invoice_ids.filtered(lambda inv: inv.state == 'posted')
             payments_data = []
             payment_ids_seen = set()
             total_paid = 0.0
